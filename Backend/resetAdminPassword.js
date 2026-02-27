@@ -15,15 +15,16 @@ const generatePassword = (len = 12) => {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
 
-    const email = 'admin@ecommerce.com';
-    const newPassword = process.argv[2] || process.env.NEW_ADMIN_PASSWORD || generatePassword(12);
+    const currentEmail = process.argv[2] || 'admin@gmail.com';
+    const newEmail = process.argv[3] || currentEmail;
+    const newPassword = process.argv[4] || process.env.NEW_ADMIN_PASSWORD || generatePassword(12);
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: currentEmail });
     if (!user) {
       const adminData = {
         firstname: 'Admin',
         lastname: 'User',
-        email,
+        email: newEmail,
         mobile: '9876543210',
         password: newPassword,
         role: 'admin',
@@ -31,14 +32,15 @@ const generatePassword = (len = 12) => {
       user = await User.create(adminData);
       console.log('✅ Admin user created');
     } else {
+      user.email = newEmail;
       user.password = newPassword;
       await user.save();
-      console.log('🔁 Admin password updated');
+      console.log('🔁 Admin credentials updated');
     }
 
     console.log('\n📧 Admin Credentials:');
     console.log('========================');
-    console.log(`Email: ${email}`);
+    console.log(`Email: ${newEmail}`);
     console.log(`Password: ${newPassword}`);
     console.log('========================\n');
 

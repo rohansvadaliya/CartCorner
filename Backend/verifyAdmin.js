@@ -11,7 +11,7 @@ const verifyAndFixAdmin = async () => {
     await mongoose.connect(process.env.MONGODB_URL);
     console.log("Database Connected Successfully\n");
 
-    const email = "admin@ecommerce.com";
+    const email = "admin@gmail.com";
 
     // Check if admin exists
     const existingAdmin = await User.findOne({ email });
@@ -37,9 +37,9 @@ const verifyAndFixAdmin = async () => {
       const adminData = {
         firstname: "Admin",
         lastname: "User",
-        email: "admin@ecommerce.com",
+        email: "admin@gmail.com",
         mobile: "9876543210",
-        password: "Admin@123456",
+        password: "123456",
         role: "admin",
       };
 
@@ -49,8 +49,8 @@ const verifyAndFixAdmin = async () => {
 
     console.log("\n📧 Use these credentials to login:");
     console.log("========================");
-    console.log(`Email: admin@ecommerce.com`);
-    console.log(`Password: Admin@123456`);
+    console.log(`Email: admin@gmail.com`);
+    console.log(`Password: 123456`);
     console.log("========================\n");
 
     mongoose.connection.close();

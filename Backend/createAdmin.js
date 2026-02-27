@@ -15,9 +15,9 @@ const createAdmin = async () => {
     const adminData = {
       firstname: "Admin",
       lastname: "User",
-      email: "admin@ecommerce.com",
+      email: "admin@gmail.com",
       mobile: "9876543210",
-      password: "Admin@123456",
+      password: "123456",
       role: "admin",
     };
 
