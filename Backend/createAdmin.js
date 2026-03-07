@@ -11,7 +11,6 @@ const createAdmin = async () => {
     await mongoose.connect(process.env.MONGODB_URL);
     console.log("Database Connected Successfully");
 
-    // Admin credentials
     const adminData = {
       firstname: "Admin",
       lastname: "User",

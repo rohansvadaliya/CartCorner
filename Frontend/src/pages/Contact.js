@@ -41,7 +41,7 @@ const Contact = () => {
         <div className="row">
           <div className="col-12">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6986.771103663534!2d76.99275607711007!3d28.886888929272477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390da5e51463d4c9%3A0xe5a485e2ac7c3d4a!2sMandaura%2C%20Haryana%20131103!5e0!3m2!1sen!2sin!4v1669909087902!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1859.4129047672884!2d72.88812070684584!3d21.238754913476928!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04f40eacb8b3d%3A0x5dd425eaf9ff081c!2sMBC%20-%20Meridian%20Business%20Center!5e0!3m2!1sen!2sin!4v1772857012979!5m2!1sen!2sin"
               width="600"
               height="450"
               className="border-0 w-100"
