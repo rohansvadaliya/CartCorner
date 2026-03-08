@@ -74,7 +74,11 @@ const ProductCard = (props) => {
 
               <div className="product-image">
                 <img
-                  src={item?.images[0]?.url}
+                  src={
+                    item?.images?.[0]?.url
+                      ? item?.images?.[0]?.url
+                      : "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg"
+                  }
                   // className="img-fluid d"
                   alt="product image"
                   height={"250px"}
@@ -82,7 +86,13 @@ const ProductCard = (props) => {
                   onClick={() => navigate("/product/" + item?._id)}
                 />
                 <img
-                  src={item?.images[0]?.url}
+                  src={
+                    item?.images?.[1]?.url
+                      ? item?.images?.[1]?.url
+                      : item?.images?.[0]?.url
+                      ? item?.images?.[0]?.url
+                      : "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg"
+                  }
                   // className="img-fluid d"
                   alt="product image"
                   height={"250px"}

@@ -23,19 +23,22 @@ const multerFilter = (req, file, cb) => {
 const uploadPhoto = multer({
   storage: storage,
   fileFilter: multerFilter,
-  limits: { fileSize: 1000000 },
+  limits: { fileSize: 5000000 },
 });
 
 const productImgResize = async (req, res, next) => {
   if (!req.files) return next();
   await Promise.all(
     req.files.map(async (file) => {
+      const outputPath = path.join(__dirname, "../public/images/products/", file.filename);
       await sharp(file.path)
-        .resize(300, 300)
+        .resize(600, 600)
         .toFormat("jpeg")
         .jpeg({ quality: 90 })
-        .toFile(`public/images/products/${file.filename}`);
-      fs.unlinkSync(`public/images/products/${file.filename}`);
+        .toFile(outputPath);
+      // Remove original file, keep the resized one for Cloudinary upload in next middleware/controller
+      fs.unlinkSync(file.path);
+      file.path = outputPath; 
     })
   );
   next();
@@ -45,12 +48,15 @@ const blogImgResize = async (req, res, next) => {
   if (!req.files) return next();
   await Promise.all(
     req.files.map(async (file) => {
+      const outputPath = path.join(__dirname, "../public/images/blogs/", file.filename);
       await sharp(file.path)
-        .resize(300, 300)
+        .resize(600, 600)
         .toFormat("jpeg")
         .jpeg({ quality: 90 })
-        .toFile(`public/images/blogs/${file.filename}`);
-      fs.unlinkSync(`public/images/blogs/${file.filename}`);
+        .toFile(outputPath);
+      // Remove original file, keep the resized one for Cloudinary upload
+      fs.unlinkSync(file.path);
+      file.path = outputPath;
     })
   );
   next();

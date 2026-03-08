@@ -90,7 +90,11 @@ const Cart = () => {
                     <div className="cart-col-1 gap-15 d-flex align-items-center">
                       <div className="w-25">
                         <img
-                          src={item?.productId.images[0].url}
+                          src={
+                            item?.productId?.images?.[0]?.url
+                              ? item?.productId?.images?.[0]?.url
+                              : "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg"
+                          }
                           className="img-fluid"
                           alt="product image"
                         />

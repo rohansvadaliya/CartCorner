@@ -46,18 +46,16 @@ const Addblog = () => {
     blogImages,
     updatedBlog,
   } = blogState;
-  //console.log(blogImages?.[0].url);
+
   useEffect(() => {
     if (getBlogId !== undefined) {
       dispatch(getABlog(getBlogId));
-      img.push(blogImages);
     } else {
       dispatch(resetState());
     }
   }, [getBlogId]);
 
   useEffect(() => {
-    dispatch(resetState());
     dispatch(getCategories());
   }, []);
 
@@ -74,32 +72,19 @@ const Addblog = () => {
     }
   }, [isSuccess, isError, isLoading]);
 
-  const img = [];
-  blogImages?.forEach((i) => {
-    img.push({
-      public_id: i.public_id,
-      url: i.url,
-    });
-  });
-  console.log(img);
-  useEffect(() => {
-    formik.values.images = img;
-  }, [img]);
-
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
       title: blogName || "",
       description: blogDesc || "",
       category: blogCategory || "",
-      images: img || "",
+      images: blogImages || [],
     },
     validationSchema: schema,
     onSubmit: (values) => {
       if (getBlogId !== undefined) {
         const data = { id: getBlogId, blogData: values };
         dispatch(updateABlog(data));
-        dispatch(resetState());
       } else {
         dispatch(createBlogs(values));
         formik.resetForm();
@@ -109,6 +94,20 @@ const Addblog = () => {
       }
     },
   });
+
+  useEffect(() => {
+    if (imgState && imgState.length > 0) {
+      formik.setFieldValue("images", [...formik.values.images, ...imgState]);
+    }
+  }, [imgState]);
+
+  const removeImage = (public_id) => {
+    dispatch(delImg(public_id));
+    formik.setFieldValue(
+      "images",
+      formik.values.images.filter((img) => img.public_id !== public_id)
+    );
+  };
 
   return (
     <div>
@@ -191,12 +190,12 @@ const Addblog = () => {
             </Dropzone>
           </div>
           <div className="showimages d-flex flex-wrap mt-3 gap-3">
-            {img?.map((i, j) => {
+            {formik.values.images?.map((i, j) => {
               return (
                 <div className=" position-relative" key={j}>
                   <button
                     type="button"
-                    onClick={() => dispatch(delImg(i.public_id))}
+                    onClick={() => removeImage(i.public_id)}
                     className="btn-close position-absolute"
                     style={{ top: "10px", right: "10px" }}
                   ></button>

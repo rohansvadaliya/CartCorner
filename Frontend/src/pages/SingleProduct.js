@@ -70,8 +70,8 @@ const SingleProduct = () => {
     height: 600,
     zoomWidth: 600,
 
-    img: productState?.images[0].url
-      ? productState?.images[0].url
+    img: productState?.images?.[0]?.url
+      ? productState?.images?.[0]?.url
       : "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg",
   };
 
@@ -141,9 +141,9 @@ const SingleProduct = () => {
               </div>
             </div>
             <div className="other-product-images d-flex flex-wrap gap-15">
-              {productState?.images.map((item, index) => {
+              {productState?.images?.map((item, index) => {
                 return (
-                  <div>
+                  <div key={index}>
                     <img src={item?.url} className="img-fluid" alt="" />
                   </div>
                 );

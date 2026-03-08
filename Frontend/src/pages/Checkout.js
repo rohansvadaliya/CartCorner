@@ -130,7 +130,7 @@ const Checkout = () => {
       return;
     }
     const result = await axios.post(
-      "http://localhost:5000/api/user/order/checkout",
+      "http://localhost:4000/api/user/order/checkout",
       { amount: totalAmount + 100 },
       config
     );
@@ -158,7 +158,7 @@ const Checkout = () => {
         };
 
         const result = await axios.post(
-          "http://localhost:5000/api/user/order/paymentVerification",
+          "http://localhost:4000/api/user/order/paymentVerification",
           data,
           config
         );
@@ -391,7 +391,11 @@ const Checkout = () => {
                             {item?.quantity}
                           </span>
                           <img
-                            src={item?.productId?.images[0]?.url}
+                            src={
+                              item?.productId?.images?.[0]?.url
+                                ? item?.productId?.images?.[0]?.url
+                                : "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg"
+                            }
                             width={100}
                             height={100}
                             alt="product"

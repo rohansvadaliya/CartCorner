@@ -40,12 +40,14 @@ const Addproduct = () => {
   const navigate = useNavigate();
   const [color, setColor] = useState([]);
   const [images, setImages] = useState([]);
-  console.log(color);
+
   useEffect(() => {
-    dispatch(getBrands());
-    dispatch(getCategories());
-    dispatch(getColors());
-  }, []);
+    if (getProductId !== undefined) {
+      dispatch(getAProduct(getProductId));
+    } else {
+      dispatch(resetState());
+    }
+  }, [getProductId]);
 
   const brandState = useSelector((state) => state.brand.brands);
   const catState = useSelector((state) => state.pCategory.pCategories);
@@ -69,13 +71,46 @@ const Addproduct = () => {
     productImages,
   } = newProduct;
 
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      title: productName || "",
+      description: productDesc || "",
+      price: productPrice || "",
+      brand: productBrand || "",
+      category: productCategory || "",
+      tags: productTag || "",
+      color: productColors?.map(i => i._id) || [],
+      quantity: productQuantity || "",
+      images: productImages || [],
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      if (getProductId !== undefined) {
+        const data = { id: getProductId, productData: values };
+        dispatch(updateAProduct(data));
+      } else {
+        dispatch(createProducts(values));
+        formik.resetForm();
+        setColor([]);
+        setTimeout(() => {
+          dispatch(resetState());
+        }, 3000);
+      }
+    },
+  });
+
   useEffect(() => {
-    if (getProductId !== undefined) {
-      dispatch(getAProduct(getProductId));
-    } else {
-      dispatch(resetState());
+    if (imgState && imgState.length > 0) {
+      formik.setFieldValue("images", [...formik.values.images, ...imgState]);
     }
-  }, [getProductId]);
+  }, [imgState]);
+
+  useEffect(() => {
+    dispatch(getBrands());
+    dispatch(getCategories());
+    dispatch(getColors());
+  }, []);
   useEffect(() => {
     if (isSuccess && createdProduct) {
       toast.success("Product Added Successfullly!");
@@ -89,103 +124,37 @@ const Addproduct = () => {
       toast.error(errorMsg);
     }
   }, [isSuccess, isError, isLoading]);
-  const coloropt = [];
-  colorState.forEach((i) => {
-    coloropt.push({
-      label: (
-        <div className="col-3">
-          <ul
-            className="colors ps-0"
-            style={{
-              width: "20px",
-              height: "20px",
-              marginBottom: "10px",
-              backgroundColor: i.title,
-              borderRadius: "50%", // Added inline style for rounded shape
-              listStyle: "none", // Hide bullet points
-              border: "2px solid transparent",
-            }}
-          ></ul>
-        </div>
-      ),
-      value: i._id,
-    });
-  });
 
-  const productcolor = [];
-  productColors?.forEach((i) => {
-    productcolor.push({
-      label: (
-        <div className="col-3">
-          <ul
-            className="colors ps-0"
-            style={{
-              width: "20px",
-              height: "20px",
-              marginBottom: "10px",
-              backgroundColor: i.title,
-              borderRadius: "50%", // Added inline style for rounded shape
-              listStyle: "none", // Hide bullet points
-              border: "2px solid transparent",
-            }}
-          ></ul>
-        </div>
-      ),
-      value: i._id,
-    });
-  });
+  const coloropt = colorState.map((i) => ({
+    label: (
+      <div className="col-3">
+        <ul
+          className="colors ps-0"
+          style={{
+            width: "20px",
+            height: "20px",
+            marginBottom: "10px",
+            backgroundColor: i.title,
+            borderRadius: "50%",
+            listStyle: "none",
+            border: "2px solid transparent",
+          }}
+        ></ul>
+      </div>
+    ),
+    value: i._id,
+  }));
 
-  const img = [];
-  imgState?.forEach((i) => {
-    img.push({
-      public_id: i.public_id,
-      url: i.url,
-    });
-  });
-
-  const imgshow = [];
-  productImages?.forEach((i) => {
-    imgshow.push({
-      public_id: i.public_id,
-      url: i.url,
-    });
-  });
-
-  useEffect(() => {
-    formik.values.color = color ? color : " ";
-    formik.values.images = img;
-  }, [color, img]);
-  const formik = useFormik({
-    initialValues: {
-      title: productName || "",
-      description: productDesc || "",
-      price: productPrice || "",
-      brand: productBrand || "",
-      category: productCategory || "",
-      tags: productTag || "",
-      color: productColors || "",
-      quantity: productQuantity || "",
-      images: productImages || "",
-    },
-    validationSchema: schema,
-    onSubmit: (values) => {
-      console.log(values);
-      if (getProductId !== undefined) {
-        const data = { id: getProductId, productData: values };
-        dispatch(updateAProduct(data));
-      } else {
-        dispatch(createProducts(values));
-        formik.resetForm();
-        setColor(null);
-        setTimeout(() => {
-          dispatch(resetState());
-        }, 3000);
-      }
-    },
-  });
   const handleColors = (e) => {
-    setColor(e);
-    console.log(color);
+    formik.setFieldValue("color", e);
+  };
+
+  const removeImage = (public_id) => {
+    dispatch(delImg(public_id));
+    formik.setFieldValue(
+      "images",
+      formik.values.images.filter((img) => img.public_id !== public_id)
+    );
   };
 
   return (
@@ -280,7 +249,7 @@ const Addproduct = () => {
             id=""
           >
             <option value="" disabled>
-              Select Category
+              Select Tag
             </option>
             <option value="featured">Featured</option>
             <option value="popular">Popular</option>
@@ -295,7 +264,7 @@ const Addproduct = () => {
             allowClear
             className="w-100"
             placeholder="Select colors"
-            defaultValue={productcolor || color}
+            value={formik.values.color}
             onChange={(i) => handleColors(i)}
             options={coloropt}
           />
@@ -330,25 +299,12 @@ const Addproduct = () => {
             </Dropzone>
           </div>
           <div className="showimages d-flex flex-wrap gap-3">
-            {imgshow?.map((i, j) => {
+            {formik.values.images?.map((i, j) => {
               return (
                 <div className=" position-relative" key={j}>
                   <button
                     type="button"
-                    onClick={() => dispatch(delImg(i.public_id))}
-                    className="btn-close position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  ></button>
-                  <img src={i.url} alt="" width={200} height={200} />
-                </div>
-              );
-            })}
-            {imgState?.map((i, j) => {
-              return (
-                <div className=" position-relative" key={j}>
-                  <button
-                    type="button"
-                    onClick={() => dispatch(delImg(i.public_id))}
+                    onClick={() => removeImage(i.public_id)}
                     className="btn-close position-absolute"
                     style={{ top: "10px", right: "10px" }}
                   ></button>
